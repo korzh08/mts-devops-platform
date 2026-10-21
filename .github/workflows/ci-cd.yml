@@ -2,9 +2,9 @@ name: "Cloud DevOps CI/CD Pipeline"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "demoTestProg" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "demoTestProg" ]
 
 permissions:
   contents: read
