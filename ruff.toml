@@ -1,0 +1,15 @@
+# Ruff configuration shared by `make lint` and CI (.github/workflows/ci-cd.yml).
+# Rules are selected explicitly so that upgrading ruff never silently changes the gate.
+target-version = "py312" # matches app/Dockerfile (python:3.12-slim) and CI
+line-length = 120
+
+[lint]
+select = [
+  "E4", "E7", "E9", # pycodestyle: syntax/statement errors
+  "E501",           # line length (line-length above)
+  "F",              # pyflakes
+  "W",              # pycodestyle warnings
+  "I",              # isort
+  "B",              # flake8-bugbear
+  "UP",             # pyupgrade
+]

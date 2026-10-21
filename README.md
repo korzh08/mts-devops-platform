@@ -103,6 +103,7 @@ flowchart TD
 hackaton/
 ├── README.md                      # Обязательный отчет по шаблону организаторов
 ├── Makefile                       # Единый интерфейс: make up, test, lint, release-good, release-bad, ai-diagnose
+├── ruff.toml                      # Конфигурация линтера (общая для make lint и CI)
 ├── app/                           # Исходный код микросервиса
 │   ├── main.py                    # FastAPI приложение: /healthz, /readyz, /metrics, dual-token auth, fault injection
 │   ├── requirements.txt           # Зависимости сервиса
@@ -129,6 +130,8 @@ hackaton/
 │   ├── secrets.sh                 # Автогенерация age-ключей и шифрование секретов
 │   ├── rotate_secrets.sh          # Zero-downtime ротация секретов (Фаза 1: dual-token)
 │   ├── rotate_secrets_finish.sh   # Завершение ротации (Фаза 2: отзыв старого токена)
+│   ├── lint.sh                    # make lint: ruff + helm lint/template (те же проверки, что в CI)
+│   ├── install_tools.sh           # Установка зафиксированных helm/ruff в ./bin (контроль целостности по SHA-256 из релиза)
 │   └── canary_deploy.sh           # Запуск Canary-релиза с автооткатом и вызовом AIOps
 ├── ai/                            # AIOps Engine (Пункт 6 — Ключевое преимущество)
 │   ├── copilot.py                 # Мультипровайдерный LLM клиент (OpenAI/DeepSeek/YandexGPT/Deterministic Replay)
@@ -159,7 +162,7 @@ hackaton/
 | **Сетевой контроллер** | Ingress-NGINX Controller | v1.11.x | Поддержка traffic-splitting канареечных аннотаций |
 | **Микросервис** | Python 3.12 (FastAPI, uvicorn) | FastAPI 0.110+ | Асинхронный REST API с Prometheus RED метриками |
 | **Контейнеризация** | Docker (Multi-stage build) | 26.x | Защищенный non-root образ (UID 10001, read-only FS) |
-| **Качество и тесты** | ruff, pytest, pytest-cov | ruff 0.3+, pytest 8+ | 100% прохождение проверок, покрытие кода 89% |
+| **Качество и тесты** | ruff, pytest, pytest-cov | ruff 0.16.9 (версия зафиксирована в `app/requirements-dev.txt`, правила — в `ruff.toml`), pytest 8+ | 100% прохождение проверок, покрытие кода 89% |
 | **Безопасность образов** | Trivy Scanner | v0.28+ | Сканирование FS и образов, блокировка при CRITICAL CVE |
 | **Управление секретами** | Mozilla SOPS + age | sops 3.9.4, age 1.2.1 | Шифрование X25519 в Git, независимость от кластерного стейта |
 | **Наблюдаемость (SRE)** | Prometheus, Grafana, Alertmanager | kube-prometheus-stack | Сбор RED-метрик, auto-provisioning дашборда и алертов |
@@ -202,7 +205,8 @@ make up
 ```bash
 make help               # Интерактивная справка по всем целям Makefile
 make test               # Запуск 10 unit-тестов с отчетом покрытия (89%)
-make lint               # Проверка линтером ruff и helm lint
+make lint               # ruff + helm lint/template (как в CI); недостающие ruff/helm сами ставятся в ./bin
+make tools              # Установить инструменты для make lint (helm, ruff) в ./bin (без sudo/apt/pip)
 make release-good       # Успешный Canary-релиз (20% -> 50% -> 100%)
 make release-bad        # Сбойный релиз -> Автооткат -> Запуск AIOps RCA
 make ai-diagnose        # Ручной вызов AIOps SRE Incident Analyzer
@@ -298,6 +302,9 @@ make down               # Быстрая очистка окружения
 | Симптом | Причина | Решение |
 |---|---|---|
 | `kubectl: command not found` | Утилита не установлена глобально | `make up` автоматически подтягивает статические бинарники в `./bin/` |
+| `./scripts/…: Permission denied` (Error 126) | Скрипты потеряли бит исполнения (копия через Windows/OneDrive, архив) | `make` запускает скрипты через `bash`, поэтому бит не нужен. Для прямого запуска: `chmod +x scripts/*.sh`; в репозитории: `git update-index --chmod=+x scripts/*.sh` |
+| `make lint` не может скачать `ruff`/`helm` | Нет доступа к github.com / get.helm.sh (закрытый контур) | Укажите зеркало: `RUFF_BASE_URL=… HELM_BASE_URL=… make lint` или готовые бинарники: `RUFF=/path/ruff HELM=/path/helm make lint` |
+| `make test`: `pytest: command not found` / `externally-managed-environment` | На Ubuntu 24.04 системный pip запрещён (PEP 668) | `sudo apt-get install -y python3-venv && python3 -m venv .venv && .venv/bin/pip install -r app/requirements-dev.txt` |
 | `Cannot decrypt secrets/app.enc.yaml` | Отсутствует age-ключ окружения | Ключ генерируется автоматически в `.state/age.key`. При переносе скопируйте файл |
 | `Canary-анализ показывает 0 requests` | Отсутствует трафик к Ingress | Убедитесь, что деплоймент `loadgen` запущен: `kubectl -n demo get pods -l app.kubernetes.io/name=demo-api-loadgen` |
 | Ошибка 401 при вызове `/api/v1/items` | Не передан Bearer токен | Получите текущий токен: `TOKEN=$(make status)` или расшифруйте через `sops -d secrets/app.enc.yaml` |
