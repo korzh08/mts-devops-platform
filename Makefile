@@ -35,7 +35,11 @@ lint: ## Линтинг кода (ruff) и валидация Helm-чарта
 	else \
 		ruff check app/; \
 	fi
-	@bin/helm lint deploy/helm/demo-api
+	@if [ -f "$(ROOT_DIR)/bin/helm" ]; then \
+		$(ROOT_DIR)/bin/helm lint deploy/helm/demo-api; \
+	else \
+		helm lint deploy/helm/demo-api; \
+	fi
 
 ## 🚦 Canary-релизы и демонстрация автоотката
 release-good: ## Запуск успешного канареечного релиза (20% -> 50% -> 100%)
