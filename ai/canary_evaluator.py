@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """AIOps Canary Evaluator.
 
 Analyzes Canary vs Stable performance metrics (Error Rate, Latency p95/p99)
@@ -7,9 +8,17 @@ and makes an autonomous deployment verdict:
 - ABORT / ROLLBACK (Immediate traffic isolation and helm rollback)
 """
 
+import os
 import sys
 import json
 from copilot import AIOpsCopilot
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 def evaluate_canary(error_rate: float, p95_latency_ms: float, sample_count: int = 50) -> dict:
@@ -64,7 +73,7 @@ def main():
         print("❌ Canary SLA breached. Triggering automated Helm rollback.")
         sys.exit(1)
     else:
-        print("✅ Canary SLA passed. Proceeding with traffic promotion (20% -> 50% -> 100%).")
+        print("✅ Canary health confirmed. Safe to scale up weight.")
         sys.exit(0)
 
 

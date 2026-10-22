@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """AIOps Incident Analyzer & SRE Copilot.
 
 Analyzes live Kubernetes pod logs, events, and metrics to perform:
@@ -12,6 +13,13 @@ import os
 import sys
 import subprocess
 from copilot import AIOpsCopilot
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 def run_cmd(cmd: str) -> str:
@@ -52,6 +60,19 @@ def collect_cluster_context() -> str:
     return f"PODS:\n{pods}\n\nEVENTS:\n{events}\n\nLOGS:\n{logs}"
 
 
+def analyze_incident(context: str = None) -> str:
+    if context is None:
+        context = collect_cluster_context()
+    prompt = (
+        f"You are an expert SRE and Cloud Platform Engineer for MTS Cloud. "
+        f"Analyze the following Kubernetes incident context and generate a Root Cause Analysis (RCA) "
+        f"with incident classification, root cause explanation, recommended action, unified diff patch, "
+        f"and time savings metrics:\n\n{context}"
+    )
+    copilot = AIOpsCopilot()
+    return copilot.generate(prompt)
+
+
 def main():
     print("=" * 70)
     print("🤖 MTS Cloud AIOps Incident Analyzer & SRE Copilot")
@@ -63,15 +84,7 @@ def main():
     print("[*] Running AI Root-Cause Analysis (RCA) and mitigation synthesis...")
     print("-" * 70)
 
-    prompt = (
-        f"You are an expert SRE and Cloud Platform Engineer for MTS Cloud. "
-        f"Analyze the following Kubernetes incident context and generate a Root Cause Analysis (RCA) "
-        f"with incident classification, root cause explanation, recommended action, unified diff patch, "
-        f"and time savings metrics:\n\n{context}"
-    )
-
-    copilot = AIOpsCopilot()
-    report = copilot.generate(prompt)
+    report = analyze_incident(context)
     print(report)
     print("-" * 70)
     print("✅ AIOps incident analysis complete. Actionable resolution plan generated.")

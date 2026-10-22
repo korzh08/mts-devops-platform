@@ -1,4 +1,4 @@
-.PHONY: all up down status test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish clean help
+.PHONY: all up down status test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish demo demo-auto clean help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -20,6 +20,13 @@ status: ## Показать статус подов, сервисов и сек�
 	@echo ""
 	@echo "=== Encrypted Secrets ==="
 	@ls -la secrets/
+
+## 🎬 Демонстрационный стенд для жюри и записи видео
+demo: ## Интерактивный прогон всех 5 этапов конвейера (с паузами для скриншотов)
+	@PYTHONPATH=ai:$$PYTHONPATH python3 scripts/demo_suite.py
+
+demo-auto: ## Автоматический сквозной прогон всех этапов без пауз (90 сек)
+	@PYTHONPATH=ai:$$PYTHONPATH python3 scripts/demo_suite.py --auto
 
 ## 🧪 Тестирование и качество кода
 test: ## Запуск unit-тестов с проверкой покрытия (pytest >= 80%)
