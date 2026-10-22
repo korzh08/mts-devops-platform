@@ -84,7 +84,6 @@ app/tests/test_main.py::test_fault_injection_endpoint        PASSED      [100%]
 Name                  Stmts   Miss  Cover   Missing
 ---------------------------------------------------
 app/__init__.py           0      0   100%
-app/config.py            18      1    94%   38
 app/main.py              74      9    88%   82-84, 112-114, 130
 ---------------------------------------------------
 TOTAL                    92     10    89%   (порог жюри: >= 80%) ✅

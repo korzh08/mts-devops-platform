@@ -61,7 +61,7 @@ helm_template() { # helm_template [extra helm args...] — render the chart, dis
 }
 
 echo "[lint] ruff: ${RUFF_BIN} ($("${RUFF_BIN}" --version))"
-echo "[lint] helm: ${HELM_BIN} ($("${HELM_BIN}" version --short 2>/dev/null || echo unknown))"
+echo "[lint] helm: ${HELM_BIN} ($("${HELM_BIN}" version --template {{.Version}} 2>/dev/null || echo unknown))"
 
 run_check "ruff check app/" "${RUFF_BIN}" check app/
 run_check "helm lint deploy/helm/demo-api" "${HELM_BIN}" lint "${CHART_DIR}"

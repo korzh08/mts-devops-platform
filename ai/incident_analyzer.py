@@ -12,7 +12,10 @@ Analyzes live Kubernetes pod logs, events, and metrics to perform:
 import os
 import sys
 import subprocess
-from copilot import AIOpsCopilot
+try:
+    from copilot import AIOpsCopilot
+except ImportError:
+    from ai.copilot import AIOpsCopilot
 
 if sys.platform == "win32":
     try:

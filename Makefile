@@ -66,7 +66,7 @@ secret-rotate-finish: ## Фаза 2 ротации токена: отзыв ст
 	@bash scripts/rotate_secrets_finish.sh
 
 clean: ## Очистка временных файлов
-	@rm -rf .pytest_cache .coverage .state/rendered-manifests.yaml reports/
+	@rm -rf .pytest_cache .coverage .state/rendered-manifests.yaml reports/grafana_red_dashboard.html
 
 help: ## Показать справку по всем командам
 	@echo "=========================================================================="

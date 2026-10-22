@@ -10,7 +10,10 @@ Ingests Trivy vulnerability scan reports and performs:
 
 import os
 import sys
-from copilot import AIOpsCopilot
+try:
+    from copilot import AIOpsCopilot
+except ImportError:
+    from ai.copilot import AIOpsCopilot
 
 if sys.platform == "win32":
     try:

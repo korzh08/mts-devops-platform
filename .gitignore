@@ -11,3 +11,7 @@ htmlcov/
 bin/
 test_clean_env/
 .ruff_cache/
+
+# Age private keys - never commit!
+secrets/*.key
+secrets/age*.txt

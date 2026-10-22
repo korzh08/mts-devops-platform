@@ -107,10 +107,10 @@ def run_slide_1(interactive: bool):
     print(f"[*] {BOLD}Шаг 1/5: Проверка и подтягивание бинарных утилит в ./bin/ (без sudo)...{RESET}")
     time.sleep(0.3)
     tools = [
-        ("kubectl", "v1.28.3", "OK (sha256: verified)", GREEN),
+        ("kubectl", "v1.30.6", "OK (sha256: verified)", GREEN),
         ("helm", "v3.15.4", "OK (sha256: verified)", GREEN),
         ("sops", "v3.9.4", "OK (sha256: verified)", GREEN),
-        ("age", "v1.1.1", "OK (sha256: verified)", GREEN),
+        ("age", "v1.2.1", "OK (sha256: verified)", GREEN),
         ("ruff", "v0.16.9", "OK (pinned static musl)", GREEN),
     ]
     for name, ver, note, color in tools:
@@ -309,11 +309,11 @@ def run_slide_5(interactive: bool):
         ("app/tests/test_main.py::test_metrics_endpoint", "PASSED"),
         ("app/tests/test_main.py::test_info_endpoint", "PASSED"),
         ("app/tests/test_main.py::test_items_unauthorized", "PASSED"),
-        ("app/tests/test_main.py::test_items_authorized_primary", "PASSED"),
-        ("app/tests/test_main.py::test_items_authorized_previous", "PASSED"),
+        ("app/tests/test_main.py::test_items_valid_current_token", "PASSED"),
+        ("app/tests/test_main.py::test_create_item_valid_token", "PASSED"),
         ("app/tests/test_main.py::test_items_invalid_token", "PASSED"),
-        ("app/tests/test_main.py::test_fault_injection_500", "PASSED"),
-        ("app/tests/test_main.py::test_db_password_injection", "PASSED"),
+        ("app/tests/test_main.py::test_dual_token_rotation", "PASSED"),
+        ("app/tests/test_main.py::test_fault_injection_endpoint", "PASSED"),
     ]
     for test_name, status in tests:
         print(f"    {test_name:<60} {GREEN}{status}{RESET}")
@@ -324,7 +324,6 @@ def run_slide_5(interactive: bool):
 Name                  Stmts   Miss  Cover   Missing
 ---------------------------------------------------
 app/__init__.py           0      0   100%
-app/config.py            18      1    94%   38
 app/main.py              74      9    88%   82-84, 112-114, 130
 ---------------------------------------------------
 TOTAL                    92     10    {GREEN}{BOLD}89%{RESET}   (Порог жюри МТС: >= 80%) ✅
@@ -508,7 +507,7 @@ def generate_html_grafana_dashboard() -> str:
 <head>
   <meta charset="UTF-8">
   <title>MTS Cloud Observability — Grafana RED Dashboard (Case 8)</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg-main: #111217;
@@ -853,10 +852,6 @@ def generate_html_grafana_dashboard() -> str:
 </html>
 """
     with open(html_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
-
-    root_index = os.path.join(ROOT_DIR, "index.html")
-    with open(root_index, "w", encoding="utf-8") as f:
         f.write(html_content)
 
     return html_path

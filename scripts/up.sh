@@ -18,7 +18,7 @@ echo "======================================================="
 
 # Detect Provider (MTS Cloud OpenStack or Local Simulation)
 PROVIDER="local"
-if [[ -f "${ROOT_DIR}/deploy/terraform/terraform.tfstate" ]]; then
+if [[ -f "${ROOT_DIR}/infra/terraform/openstack/terraform.tfstate" ]]; then
   PROVIDER="openstack"
   echo "[*] Detected MTS Cloud OpenStack provisioned infrastructure."
 else
@@ -28,13 +28,17 @@ fi
 echo "[*] Step 1/5: Verifying dependencies and static CLI tooling..."
 
 # Verify or download required binaries into ./bin/ with retry and validation
-if ! command -v kubectl &>/dev/null && ! "${ROOT_DIR}/bin/kubectl" version --client &>/dev/null; then
+if ! command -v kubectl &>/dev/null && ! ( [[ -x "${ROOT_DIR}/bin/kubectl" ]] && "${ROOT_DIR}/bin/kubectl" version --client &>/dev/null ); then
   rm -f "${ROOT_DIR}/bin/kubectl"
   echo "[deps] Fetching kubectl v1.30.6..."
-  curl -fsSL --retry 3 -o "${ROOT_DIR}/bin/kubectl" "https://dl.k8s.io/release/v1.30.6/bin/linux/amd64/kubectl" && chmod +x "${ROOT_DIR}/bin/kubectl"
+  TMP_KUBECTL="$(mktemp "${ROOT_DIR}/bin/.kubectl.XXXXXX")"
+  if curl -fsSL --retry 3 -o "${TMP_KUBECTL}" "https://dl.k8s.io/release/v1.30.6/bin/linux/amd64/kubectl"; then
+    chmod +x "${TMP_KUBECTL}" && mv -f "${TMP_KUBECTL}" "${ROOT_DIR}/bin/kubectl"
+  fi
+  rm -f "${TMP_KUBECTL}"
 fi
 
-if ! command -v helm &>/dev/null && ! "${ROOT_DIR}/bin/helm" version &>/dev/null; then
+if ! command -v helm &>/dev/null && ! ( [[ -x "${ROOT_DIR}/bin/helm" ]] && "${ROOT_DIR}/bin/helm" version &>/dev/null ); then
   rm -f "${ROOT_DIR}/bin/helm"
   echo "[deps] Fetching helm v3.15.4..."
   TMP_HELM="$(mktemp "${ROOT_DIR}/bin/.helm.tar.gz.XXXXXX")"
@@ -44,13 +48,17 @@ if ! command -v helm &>/dev/null && ! "${ROOT_DIR}/bin/helm" version &>/dev/null
   rm -f "${TMP_HELM}"
 fi
 
-if ! command -v sops &>/dev/null && ! "${ROOT_DIR}/bin/sops" --version &>/dev/null; then
+if ! command -v sops &>/dev/null && ! ( [[ -x "${ROOT_DIR}/bin/sops" ]] && "${ROOT_DIR}/bin/sops" --version &>/dev/null ); then
   rm -f "${ROOT_DIR}/bin/sops"
   echo "[deps] Fetching sops v3.9.4..."
-  curl -fsSL --retry 3 -o "${ROOT_DIR}/bin/sops" "https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64" && chmod +x "${ROOT_DIR}/bin/sops"
+  TMP_SOPS="$(mktemp "${ROOT_DIR}/bin/.sops.XXXXXX")"
+  if curl -fsSL --retry 3 -o "${TMP_SOPS}" "https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64"; then
+    chmod +x "${TMP_SOPS}" && mv -f "${TMP_SOPS}" "${ROOT_DIR}/bin/sops"
+  fi
+  rm -f "${TMP_SOPS}"
 fi
 
-if ! command -v age-keygen &>/dev/null && ! "${ROOT_DIR}/bin/age" --version &>/dev/null; then
+if ! command -v age-keygen &>/dev/null && ! ( [[ -x "${ROOT_DIR}/bin/age" ]] && "${ROOT_DIR}/bin/age" --version &>/dev/null ); then
   rm -f "${ROOT_DIR}/bin/age" "${ROOT_DIR}/bin/age-keygen"
   echo "[deps] Fetching age v1.2.1..."
   TMP_AGE="$(mktemp "${ROOT_DIR}/bin/.age.tar.gz.XXXXXX")"
