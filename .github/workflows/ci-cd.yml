@@ -48,7 +48,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.15.4"
+          version: "v3.15.4" # keep in sync with scripts/install_tools.sh and scripts/up.sh
 
       - name: Helm Lint (Stable & Canary)
         run: |

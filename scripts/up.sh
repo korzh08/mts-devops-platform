@@ -33,7 +33,7 @@ if ! command -v kubectl &>/dev/null && [[ ! -f "${ROOT_DIR}/bin/kubectl" ]]; the
 fi
 
 if ! command -v helm &>/dev/null && [[ ! -f "${ROOT_DIR}/bin/helm" ]]; then
-  echo "[deps] Fetching helm v3.15.4..."
+  echo "[deps] Fetching helm v3.15.4..." # keep in sync with scripts/install_tools.sh and CI
   curl -fsSL "https://get.helm.sh/helm-v3.15.4-linux-amd64.tar.gz" | tar -zxv -C "${ROOT_DIR}/bin" --strip-components=1 linux-amd64/helm && chmod +x "${ROOT_DIR}/bin/helm"
 fi
 
@@ -48,11 +48,12 @@ if ! command -v age-keygen &>/dev/null && [[ ! -f "${ROOT_DIR}/bin/age-keygen" ]
 fi
 
 echo "[*] Step 2/5: Synchronizing SOPS + age encrypted secrets..."
-"${ROOT_DIR}/scripts/secrets.sh"
+bash "${ROOT_DIR}/scripts/secrets.sh"
 
 echo "[*] Step 3/5: Checking cluster connectivity and platform stack..."
-KUBECTL_BIN="${ROOT_DIR}/bin/kubectl"
-HELM_BIN="${ROOT_DIR}/bin/helm"
+# ./bin is first on PATH (see above), with fallback to a system-wide install.
+KUBECTL_BIN="kubectl"
+HELM_BIN="helm"
 
 if ${KUBECTL_BIN} cluster-info &>/dev/null; then
   CLUSTER_ONLINE=true

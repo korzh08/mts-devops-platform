@@ -10,3 +10,4 @@ htmlcov/
 *.mp4
 bin/
 test_clean_env/
+.ruff_cache/

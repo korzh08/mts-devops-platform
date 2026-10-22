@@ -1,4 +1,4 @@
-.PHONY: all up down status test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish clean help
+.PHONY: all up down status tools test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish clean help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -9,10 +9,10 @@ all: up
 
 ## 🚀 Основные команды развертывания (Правило 3 команд)
 up: ## Развернуть весь конвейер, секреты, чарты и мониторинг
-	@./scripts/up.sh
+	@bash scripts/up.sh
 
 down: ## Удалить развернутое окружение
-	@./scripts/down.sh
+	@bash scripts/down.sh
 
 status: ## Показать статус подов, сервисов и секретов
 	@echo "=== Kubernetes Pods ==="
@@ -29,20 +29,18 @@ test: ## Запуск unit-тестов с проверкой покрытия (
 		PYTHONPATH=. pytest app/tests/test_main.py --cov=app --cov-report=term-missing -v; \
 	fi
 
-lint: ## Линтинг кода (ruff) и валидация Helm-чарта
-	@if [ -d ".venv" ]; then \
-		.venv/bin/ruff check app/; \
-	else \
-		ruff check app/; \
-	fi
-	@bin/helm lint deploy/helm/demo-api
+lint: ## Линтинг кода (ruff) и валидация Helm-чарта (недостающие ruff/helm ставятся в ./bin)
+	@bash scripts/lint.sh
+
+tools: ## Установить инструменты для make lint (helm, ruff) в ./bin (без sudo/apt/pip)
+	@bash scripts/install_tools.sh
 
 ## 🚦 Canary-релизы и демонстрация автоотката
 release-good: ## Запуск успешного канареечного релиза (20% -> 50% -> 100%)
-	@./scripts/canary_deploy.sh good
+	@bash scripts/canary_deploy.sh good
 
 release-bad: ## Запуск сбойного релиза -> Автооткат -> Запуск AIOps RCA
-	@./scripts/canary_deploy.sh bad
+	@bash scripts/canary_deploy.sh bad
 
 ## 🤖 AIOps & LLM Copilot (Ключевое преимущество)
 ai-diagnose: ## Запуск AI SRE Incident Analyzer (RCA + diff-патч сбоя)
@@ -56,10 +54,10 @@ ai-sec-triage: ## Интеллектуальный триаж уязвимост
 
 ## 🔐 Управление секретами и zero-downtime ротация
 secret-rotate: ## Фаза 1 ротации токена: режим dual-token (старый и новый токен валидны)
-	@./scripts/rotate_secrets.sh
+	@bash scripts/rotate_secrets.sh
 
 secret-rotate-finish: ## Фаза 2 ротации токена: отзыв старого токена
-	@./scripts/rotate_secrets_finish.sh
+	@bash scripts/rotate_secrets_finish.sh
 
 clean: ## Очистка временных файлов
 	@rm -rf .pytest_cache .coverage .state/rendered-manifests.yaml
