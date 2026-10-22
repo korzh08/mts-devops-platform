@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """AIOps Security Triager.
 
 Ingests Trivy vulnerability scan reports and performs:
@@ -10,6 +11,13 @@ Ingests Trivy vulnerability scan reports and performs:
 import os
 import sys
 from copilot import AIOpsCopilot
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 def triage_security_report(trivy_report_path: str = None) -> str:

@@ -1,4 +1,4 @@
-.PHONY: all up down status tools test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish clean help
+.PHONY: all up down status tools test lint release-good release-bad ai-diagnose ai-canary ai-sec-triage secret-rotate secret-rotate-finish demo demo-auto demo-charts clean help
 
 SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
@@ -20,6 +20,16 @@ status: ## Показать статус подов, сервисов и сек�
 	@echo ""
 	@echo "=== Encrypted Secrets ==="
 	@ls -la secrets/
+
+## 🎬 Демонстрационный стенд для защиты и генерации материалов презентации
+demo: ## Интерактивный прогон всех слайдов/этапов для презентации и скриншотов
+	@PYTHONPATH=ai:$$PYTHONPATH python3 scripts/demo_suite.py
+
+demo-auto: ## Быстрый сквозной прогон всех слайдов без пауз (90 сек)
+	@PYTHONPATH=ai:$$PYTHONPATH python3 scripts/demo_suite.py --auto
+
+demo-charts: ## Сгенерировать интерактивный Grafana RED дашборд с графиками
+	@PYTHONPATH=ai:$$PYTHONPATH python3 scripts/demo_suite.py --generate-charts
 
 ## 🧪 Тестирование и качество кода
 test: ## Запуск unit-тестов с проверкой покрытия (pytest >= 80%)
@@ -60,7 +70,7 @@ secret-rotate-finish: ## Фаза 2 ротации токена: отзыв ст
 	@bash scripts/rotate_secrets_finish.sh
 
 clean: ## Очистка временных файлов
-	@rm -rf .pytest_cache .coverage .state/rendered-manifests.yaml
+	@rm -rf .pytest_cache .coverage .state/rendered-manifests.yaml reports/
 
 help: ## Показать справку по всем командам
 	@echo "=========================================================================="
