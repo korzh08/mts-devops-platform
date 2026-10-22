@@ -33,11 +33,7 @@ demo-charts: ## Сгенерировать интерактивный Grafana RE
 
 ## 🧪 Тестирование и качество кода
 test: ## Запуск unit-тестов с проверкой покрытия (pytest >= 80%)
-	@if [ -d ".venv" ]; then \
-		PYTHONPATH=. .venv/bin/pytest app/tests/test_main.py --cov=app --cov-report=term-missing -v; \
-	else \
-		PYTHONPATH=. pytest app/tests/test_main.py --cov=app --cov-report=term-missing -v; \
-	fi
+	@bash scripts/test.sh
 
 lint: ## Линтинг кода (ruff) и валидация Helm-чарта (недостающие ruff/helm ставятся в ./bin)
 	@bash scripts/lint.sh
