@@ -455,9 +455,10 @@ def run_slide_7(interactive: bool):
     print(scorecard_table)
 
     chart_file = generate_html_grafana_dashboard()
-    print(f"📊 {CYAN}{BOLD}Интерактивный дашборд Grafana с графиками сгенерирован:{RESET}")
-    print(f"   file:///{chart_file.replace(os.sep, '/')}")
-    print(f"   (Откройте этот файл в браузере для получения идеального скриншота Grafana!)\n")
+    print(f"📊 {CYAN}{BOLD}Интерактивный дашборд Grafana с графиками:{RESET}")
+    print(f"   🌐 {BOLD}Официальный онлайн веб-сайт (Live):{RESET} {GREEN}https://korzh08.github.io/mts-devops-platform/{RESET}")
+    print(f"   📊 {BOLD}Кластерный Grafana UI:{RESET}             {CYAN}http://localhost:3000/d/demo-api-slo{RESET}")
+    print(f"   📁 {BOLD}Локальный файл (Offline):{RESET}             file:///{chart_file.replace(os.sep, '/')}\n")
 
     print(f"{GRAY}📸 [СДЕЛАЙТЕ СКРИНШОТ ДЛЯ СЛАЙДА 7]: Графики RED-метрик и итоговая таблица Scorecard.{RESET}")
 
@@ -479,8 +480,10 @@ def run_slide_8(interactive: bool):
 ║          «Надежность, заложенная в архитектуру. Скорость, умноженная на ИИ»  ║
 ╚══════════════════════════════════════════════════════════════════════════════╝{RESET}
 
-  📦 {BOLD}Открытый репозиторий:{RESET} https://github.com/korzh08/mts-devops-platform
-  ⭐ {BOLD}Готовность к проверке:{RESET} Разворачивается за 3 команды на любой чистой Ubuntu!
+  📦 {BOLD}Открытый репозиторий:{RESET}   https://github.com/korzh08/mts-devops-platform
+  🌐 {BOLD}Онлайн-дашборд Grafana:{RESET} {GREEN}https://korzh08.github.io/mts-devops-platform/{RESET}
+  📊 {BOLD}Кластерный Grafana UI:{RESET}   http://localhost:3000/d/demo-api-slo
+  ⭐ {BOLD}Готовность к проверке:{RESET}   Разворачивается за 3 команды на любой чистой Ubuntu!
   
   👥 {BOLD}Команда проекта (Кейс №8):{RESET}
      • Всеволод Жуков    — Team Lead / Cloud Architect
@@ -850,6 +853,10 @@ def generate_html_grafana_dashboard() -> str:
 </html>
 """
     with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    root_index = os.path.join(ROOT_DIR, "index.html")
+    with open(root_index, "w", encoding="utf-8") as f:
         f.write(html_content)
 
     return html_path

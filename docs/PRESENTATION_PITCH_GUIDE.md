@@ -142,7 +142,9 @@
 ### СЛАЙД 8: Финальный экран
 * **На экране:** 
   - «Надежность, заложенная в архитектуру. Скорость, умноженная на интеллект.»
-  - Репозиторий: `github.com/korzh08/mts-devops-platform`
+  - Открытый репозиторий: https://github.com/korzh08/mts-devops-platform
+  - Живой веб-дашборд Grafana (Online): https://korzh08.github.io/mts-devops-platform/
+  - Кластерный Grafana UI: http://localhost:3000/d/demo-api-slo
   - Команда: Всеволод, Дарья, Александр, Константин.
   - «Спасибо за внимание! Готовы ответить на ваши вопросы!»
 

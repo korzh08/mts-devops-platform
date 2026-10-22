@@ -180,7 +180,9 @@ AIOPS_MODEL=yandexgpt/latest
 * **Когда скринить:** После вывода финальной рамки.
 * **Что должно быть в кадре:**
   * Лозунг: *«Надежность, заложенная в архитектуру. Скорость, умноженная на ИИ»*;
-  * Ссылка на репозиторий: `github.com/korzh08/mts-devops-platform`;
+  * Ссылка на репозиторий: https://github.com/korzh08/mts-devops-platform
+  * Живой веб-дашборд Grafana (Online): https://korzh08.github.io/mts-devops-platform/
+  * Кластерный UI Grafana: http://localhost:3000/d/demo-api-slo
   * Список команды: Всеволод, Дарья, Александр, Константин.
 * **Куда вставлять:** Слайд 8, финальный слайд презентации.
 
