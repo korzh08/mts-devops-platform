@@ -1,7 +1,7 @@
 # Облачный DevOps-конвейер: от репозитория до production-Kubernetes за 3 команды + AIOps Engine
 
 ```bash
-git clone https://github.com/<team>/mts-devops-platform.git
+git clone https://github.com/korzh08/mts-devops-platform.git
 cd mts-devops-platform
 make up
 ```
