@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """AIOps Canary Evaluator.
 
 Analyzes Canary vs Stable performance metrics (Error Rate, Latency p95/p99)
@@ -10,6 +11,13 @@ and makes an autonomous deployment verdict:
 import sys
 import json
 from copilot import AIOpsCopilot
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 def evaluate_canary(error_rate: float, p95_latency_ms: float, sample_count: int = 50) -> dict:
